@@ -1,4 +1,4 @@
-import express, { application } from "express";
+import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
 import { MongoClient, ObjectId, ServerApiVersion } from "mongodb";
@@ -71,7 +71,7 @@ async function run() {
     });
 
     app.get("/latest-blogs", async (req, res) => {
-      const query = blogsCollection.find().limit(6).sort({ _id: -1 });
+      const query = blogsCollection.find().limit(8).sort({ _id: -1 });
       const result = await query.toArray();
       res.send(result);
     });
