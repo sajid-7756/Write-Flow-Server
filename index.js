@@ -28,6 +28,7 @@ async function run() {
     const db = client.db("writeflowDB");
     const usersCollection = db.collection("users");
     const blogsCollection = db.collection("blogs");
+    const commentsCollection = db.collection("comments");
 
     //Users related APIs
     app.post("/users", async (req, res) => {
@@ -81,6 +82,32 @@ async function run() {
       const query = { _id: new ObjectId(id) };
       const result = await blogsCollection.deleteOne(query);
       res.send(result);
+    });
+
+    // Comments related APIs
+    app.post("/comments", async (req, res) => {
+      try {
+        const newComment = req.body;
+        const result = await commentsCollection.insertOne(newComment);
+        res.status(201).send(result);
+      } catch (error) {
+        console.error(error);
+        res.status(500).send({ message: "Internal Server Error" });
+      }
+    });
+    // Get comments
+    app.get("/comments/:blogId", async (req, res) => {
+      try {
+        const { blogId } = req.params;
+        const result = await commentsCollection
+          .find({ blogId })
+          .sort({ _id: -1 })
+          .toArray();
+        res.send(result);
+      } catch (error) {
+        console.error(error);
+        res.status(500).send({ message: "Internal Server Error" });
+      }
     });
 
     await client.db("admin").command({ ping: 1 });
